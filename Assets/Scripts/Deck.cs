@@ -13,8 +13,9 @@ public class Deck : MonoBehaviour {
 	{
 		numCards = 30;
 		GenerateDeck ();
+		Shuffle();
 		Card currentCard = Draw ();
-		while(currentCard != null)
+		while(cards.Count > 0)
 		{
 			Debug.Log(currentCard.cardName);
 			Debug.Log(currentCard.type);
@@ -30,12 +31,19 @@ public class Deck : MonoBehaviour {
 
 	public void Shuffle()
 	{
-
+		for (int i = 0; i < cards.Count; i++) {
+			Card temp = cards[i];
+			int randomIndex = Random.Range(i, cards.Count);
+			cards[i] = cards[randomIndex];
+			cards[randomIndex] = temp;
+		}
 	}
 
 	public Card Draw()
 	{
-		return cards.Remove;
+		Card drawnCard = cards[0];
+		cards.RemoveAt (0);
+		return drawnCard;
 	}
 
 	private void GenerateDeck()
@@ -53,11 +61,6 @@ public class Deck : MonoBehaviour {
 	{
 		string fileContents = cardStuff.text;
 		string [] cardContents = fileContents.Split ("\n"[0]);
-		for(int i = 0; i < numCards; i++)
-		{
-			Debug.Log(cardContents[i]);
-		}
-
 		return cardContents;
 	}
 }

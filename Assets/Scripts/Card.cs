@@ -49,7 +49,18 @@ public class Card{
 
 	public Card(string typ, string nme, string at, string df, string eff1, string value1, string eff2, string value2)
 	{
-		//type = typ;
+		switch(typ)
+		{
+		case "attack":
+			type = CardType.attack;
+			break;
+		case "defense":
+			type = CardType.defense;
+			break;
+		case "utility":
+			type = CardType.utility;
+			break;
+		}
 		cardName = nme;
 		atk = int.Parse (at);
 		def = int.Parse (df);
