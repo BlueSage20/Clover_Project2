@@ -21,21 +21,16 @@ public enum EffectType
 	bind
 }
 
-public class Effect
-{
-	EffectType type;
-	int amonut;
-	bool isFriendly;
-}
-
 public class Card{
 
 	public CardType type;
 	public string cardName;
 	public int atk;
 	public int def;
-	public string effect1;
-	public string effect2;
+	public EffectType effect1;
+	private int effectStrength1;
+	public EffectType effect2;
+	private int effectStrength2;
 
 	// Use this for initialization
 	void Start () {
@@ -64,8 +59,73 @@ public class Card{
 		cardName = nme;
 		atk = int.Parse (at);
 		def = int.Parse (df);
-		effect1 = eff1;
-		effect2 = eff2;
+		//effect1 = eff1;
+		//effect2 = eff2;
+		switch(eff1)
+		{
+		case "Pierce":
+			effect1 = EffectType.pierce;
+			break;
+		case "Block":
+			effect1 = EffectType.block;
+			break;
+		case "Heal":
+			effect1 = EffectType.heal;
+			break;
+		case "Counter":
+			effect1 = EffectType.counter;
+			break;
+		case "Poison":
+			effect1 = EffectType.poison;
+			break;
+		case "Cure":
+			effect1 = EffectType.cure;
+			break;
+		case "Burn":
+			effect1 = EffectType.burn;
+			break;
+		case "Boost":
+			effect1 = EffectType.boost;
+			break;
+		case "Bind":
+			effect1 = EffectType.bind;
+			break;
+		}
+
+		effectStrength1 = int.Parse (value1);
+
+		switch(eff2)
+		{
+		case "Pierce":
+			effect2 = EffectType.pierce;
+			break;
+		case "Block":
+			effect2 = EffectType.block;
+			break;
+		case "Heal":
+			effect2 = EffectType.heal;
+			break;
+		case "Counter":
+			effect2 = EffectType.counter;
+			break;
+		case "Poison":
+			effect2 = EffectType.poison;
+			break;
+		case "Cure":
+			effect2 = EffectType.cure;
+			break;
+		case "Burn":
+			effect2 = EffectType.burn;
+			break;
+		case "Boost":
+			effect2 = EffectType.boost;
+			break;
+		case "Bind":
+			effect2 = EffectType.bind;
+
+		}
+
+		effectStrength2 = int.Parse (value2);
 	}
 
 	/*

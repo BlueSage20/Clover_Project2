@@ -14,13 +14,6 @@ public class Deck : MonoBehaviour {
 		numCards = 30;
 		GenerateDeck ();
 		Shuffle();
-		Card currentCard = Draw ();
-		while(cards.Count > 0)
-		{
-			Debug.Log(currentCard.cardName);
-			Debug.Log(currentCard.type);
-			currentCard = Draw ();
-		}
 	}
 	
 	// Update is called once per frame
