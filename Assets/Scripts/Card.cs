@@ -122,7 +122,7 @@ public class Card{
 			break;
 		case "Bind":
 			effect2 = EffectType.bind;
-
+			break;
 		}
 
 		effectStrength2 = int.Parse (value2);

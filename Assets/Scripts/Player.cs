@@ -10,7 +10,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Player : MonoBehaviour {
+public class Player {
     // CONSTANTS
     public const int MAX_HEALTH = 5;
     public const int BASE_DEFENSE = 1;
@@ -19,54 +19,28 @@ public class Player : MonoBehaviour {
     // Player Global Variables
     public int Health;
     public int defense;
-    public int MaxMove; // for the moment maxmove doesn't do anything. There's no tiles to check. 
-
-    // REFERENCE
-    public static Player p; // reference to current player object.
-
-    Vector3 newPos; // meant for player movement. (Is subject to change later)
 
 	// Use this for initialization
 	void Start () {
-        p = this; // create instance of this player
-        newPos = transform.position; // set newPos to the current transform
 
         // if player has no health initially, start player with max health.
-        if(p.Health <= 0)
+        if(Health <= 0)
         {
-            p.Health = MAX_HEALTH;
+            Health = MAX_HEALTH;
         }
         // give the player a starting defense value if they start with none.
-        if (p.defense <= 0)
+        if (defense <= 0)
         {
-            p.defense = BASE_DEFENSE;
+            defense = BASE_DEFENSE;
         }
 
-        /*Testing for effects
-         AddEffect(4);
-
-         Testing for Damage
-         TakeDamage(4);
-         Debug.Log(string.Format("Remaining Health: {0}", p.Health));
-
-         Testing for Defense
-         Defend(4);
-         Debug.Log(string.Format("Remaining Health: {0}", p.Health)); */
 	}
-	// Update is called once per frame
-	void Update () {
-        // call move player method
-        // Current method: Raycasting
-        movePlayer();
 
-        // Anyone know a more elegant solution to this?
-        // Locks y position of player object.
-        transform.position = new Vector3(newPos.x, 1, newPos.z);
-	}
     // meant to handle when the player is struck by enemy card. 
-    public static void TakeDamage(int i)
+    public void TakeDamage(int i)
     {
-        if (p.defense > 0)
+		var p = this;
+        if (defense > 0)
         {
             // check for pierce
             i -= p.defense;
@@ -83,8 +57,9 @@ public class Player : MonoBehaviour {
         p.Health -= i;
     }
     // Defend class. Happens when player throws up a defense card. 
-    public static void Defend(int i)
+    public void Defend(int i)
     {
+		var p = this;
         if (p.defense < i) // check if safe
         {
             // defend what you can and then subtract the rest from health.
@@ -142,26 +117,6 @@ public class Player : MonoBehaviour {
             case 8:
                 Debug.Log(string.Format("Bind - Opponent is prevented from moving next turn."));
                 break;
-        }
-    }
-    // moves the player where clicked using Raycast
-    // just a current way to move the player. Will be replaced by tile based later.
-    public void movePlayer()
-    {
-        // get input of player 
-        if (Input.GetMouseButtonDown(0))
-        {
-            // get raycast "hit". Basically where the player clicks
-            RaycastHit moveHere;
-            // send ray from camera
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            // if player clicks valid spot
-            if(Physics.Raycast(ray, out moveHere))
-            {
-                // move the player
-                newPos = moveHere.point;
-                transform.position = newPos;
-            }
         }
     }
 }
