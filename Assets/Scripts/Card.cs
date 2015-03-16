@@ -28,9 +28,9 @@ public class Card{
 	public int atk;
 	public int def;
 	public EffectType effect1;
-	private int effectStrength1;
+	public int effectStrength1;
 	public EffectType effect2;
-	private int effectStrength2;
+	public int effectStrength2;
 
 	// Use this for initialization
 	void Start () {
@@ -92,8 +92,10 @@ public class Card{
 			break;
 		}
 
-		effectStrength1 = int.Parse (value1);
-
+		if (value1 != null) {
+			effectStrength1 = int.Parse (value1);
+		}
+		
 		switch(eff2)
 		{
 		case "Pierce":
@@ -125,7 +127,9 @@ public class Card{
 			break;
 		}
 
-		effectStrength2 = int.Parse (value2);
+		if (value2 != null) {
+			effectStrength2 = int.Parse (value2);
+		}
 	}
 
 	/*
@@ -154,4 +158,5 @@ public class Card{
 		// if(effect2 effects target){target.applyEffect(effect1}
 		// repeat for effect 2
 	}
+	// for the moment let's call this the theoretical Affect Player method.
 }

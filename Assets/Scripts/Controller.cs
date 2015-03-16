@@ -26,51 +26,63 @@ public class Controller : MonoBehaviour
 
 	public void Start()
 	{
+		players [0] = new Player ("James");
+		players [1] = new Player ("Sung");
 		decks[0] = new Deck();
 	}
 
 
 	public void Update()
 	{
-		int pid;
+		int playerID;
 		switch (state)
 		{
 			default:
 			case GameState.p1turn:
-				pid = 0;
+				playerID = 0;
 				break;
 			case GameState.p2turn:
-				pid = 1;
+				playerID = 1;
 				break;
 		}
 
-		Debug.Log("Player " + pid + "'s turn.");
+		Debug.Log("Player " + playerID + "'s turn.");
 
-		var hand = hands[pid];
+		var hand = hands[playerID];
 
 		bool gotCard = true;
 		int handCount;
 		while ((handCount = hand.transform.childCount) < 5 && gotCard)
 		{
-			Debug.Log("Player " + pid + " has " + handCount + " cards, drawing.");
-			gotCard = DrawCard(pid);
+			Debug.Log("Player " + playerID + " has " + handCount + " cards, drawing.");
+			gotCard = DrawCard(playerID);
+		}
+
+		if (Input.GetKeyDown ("space")) {
+
+			Battle(players[0],players[1]);
 		}
 	}
 
-	public bool DrawCard(int pid)
+	public bool DrawCard(int playerID)
 	{
-		if (decks[pid].cards.Count < 1)
+		if (decks[playerID].cards.Count < 1)
 		{
 			return false;
 		}
 
 		var card = Instantiate(cardPrefab) as GameObject;
 		var script = card.GetComponent<UICard>();
-		script.card = decks[pid].Draw();
+		script.card = decks[playerID].Draw();
 
-		card.transform.parent = hands[pid].transform;
+		card.transform.parent = hands[playerID].transform;
 
 		return true;
+	}
+
+	// Battle Handler
+	public void Battle(Player p1, Player p2)
+	{
 	}
 
 	public void CardClicked(Object cardObject)

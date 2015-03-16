@@ -1,15 +1,15 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class Deck : MonoBehaviour {
+public class Deck {
 
 	public List<Card> cards = new List<Card>();
-	public TextAsset cardStuff;
 	private static int numCards;
 
 	// Use this for initialization
-	void Start () 
+	public Deck () 
 	{
 		numCards = 30;
 		GenerateDeck ();
@@ -41,6 +41,7 @@ public class Deck : MonoBehaviour {
 
 	private void GenerateDeck()
 	{
+
 		string[] cardInfo = ReadCards ();
 
 		for(int i = 0; i < numCards; i++)
@@ -52,7 +53,11 @@ public class Deck : MonoBehaviour {
 
 	private string[] ReadCards()
 	{
-		string fileContents = cardStuff.text;
+		Debug.Log (Application.dataPath);
+		var sr = new StreamReader (Application.dataPath + "/Scripts/TextAsset/CardList.txt");
+		var fileContents = sr.ReadToEnd ();
+		sr.Close ();
+
 		string [] cardContents = fileContents.Split ("\n"[0]);
 		return cardContents;
 	}
