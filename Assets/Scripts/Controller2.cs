@@ -155,6 +155,16 @@ public class Controller2 : MonoBehaviour {
 			{
 				p2.TakeDamage(p1Card.atk, p1Card.effectStrength2);
 			}
+			else if(p1Card.effect1 == EffectType.counter)
+			{
+				p1.TakeDamage(p2Card.atk,0);
+				p2.TakeDamage(p1Card.atk,0);
+			}
+			else if(p1Card.effect2 == EffectType.counter)
+			{
+				p1.TakeDamage(p2Card.atk,0);
+				p2.TakeDamage(p1Card.atk,0);
+			}
 			else{
 				p2.TakeDamage(p1Card.atk, 0);
 			}
@@ -167,6 +177,16 @@ public class Controller2 : MonoBehaviour {
 			else if(p2Card.effect2 == EffectType.pierce)
 			{
 				p1.TakeDamage(p2Card.atk, p2Card.effectStrength2);
+			}
+			else if(p2Card.effect1 == EffectType.counter)
+			{
+				p1.TakeDamage(p2Card.atk,0);
+				p2.TakeDamage(p1Card.atk,0);
+			}
+			else if(p2Card.effect2 == EffectType.counter)
+			{
+				p1.TakeDamage(p2Card.atk,0);
+				p2.TakeDamage(p1Card.atk,0);
 			}
 			else{
 				p1.TakeDamage(p2Card.atk, 0);
