@@ -21,7 +21,8 @@ public class Controller2 : MonoBehaviour {
 	private Card c1, c2;
 	private GameObject go1, go2;
 
-	private GameState state = GameState.Player1Deciding | GameState.Player2Deciding;
+	[HideInInspector]
+	public GameState state = GameState.Player1Deciding | GameState.Player2Deciding;
 
 	public GameObject cardPrototype;
 	public GameObject textPrototype;
@@ -131,6 +132,16 @@ public class Controller2 : MonoBehaviour {
 			{
 				p2.TakeDamage(p1Card.atk, p1Card.effectStrength2);
 			}
+			else if(p1Card.effect1 == EffectType.counter)
+			{
+				p1.TakeDamage(p2Card.atk,0);
+				p2.TakeDamage(p1Card.atk,0);
+			}
+			else if(p1Card.effect2 == EffectType.counter)
+			{
+				p1.TakeDamage(p2Card.atk,0);
+				p2.TakeDamage(p1Card.atk,0);
+			}
 			else{
 				p2.TakeDamage(p1Card.atk, 0);
 			}
@@ -143,6 +154,16 @@ public class Controller2 : MonoBehaviour {
 			else if(p2Card.effect2 == EffectType.pierce)
 			{
 				p1.TakeDamage(p2Card.atk, p2Card.effectStrength2);
+			}
+			else if(p2Card.effect1 == EffectType.counter)
+			{
+				p1.TakeDamage(p2Card.atk,0);
+				p2.TakeDamage(p1Card.atk,0);
+			}
+			else if(p2Card.effect2 == EffectType.counter)
+			{
+				p1.TakeDamage(p2Card.atk,0);
+				p2.TakeDamage(p1Card.atk,0);
 			}
 			else{
 				p1.TakeDamage(p2Card.atk, 0);

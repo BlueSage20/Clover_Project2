@@ -10,6 +10,20 @@
 using UnityEngine;
 using System.Collections;
 
+// check if player got any status ailments
+public enum PlayerState
+{
+	safe,
+	pierced,
+	blocked,
+	healed,
+	countered,
+	poisoned,
+	burned,
+	boosted,
+	bound
+}
+
 public class Player {
     // CONSTANTS
     public const int MAX_HEALTH = 20;
@@ -19,8 +33,11 @@ public class Player {
     // Player Global Variables
     public int Health;
     public int defense;
+	public int oldDef;
 	public string Name;
-
+	public int turns;
+	public Controller2 contrl;
+	public Card cardChoice = null;
 	public Deck deck;
 	public Card[] hand = new Card[3];
 	public Transform uiHand;
@@ -31,7 +48,10 @@ public class Player {
 
 	public GameObject cardPrototype;
 
-	// Use this for initialization
+	public bool tookDamage = false;
+
+	public PlayerState p1State = PlayerState.safe;
+
 	public Player (string nme, Transform uiHand, GameObject cardPrototype, logger log) {
 		deck = new Deck ();
 		Name = nme;
@@ -95,26 +115,31 @@ public class Player {
     public void TakeDamage(int i, int pierceValue)
     {
 		var p = this;
-        if (p.defense > 0)
+		// Some effects are handled in take damage
+		if (p1State == PlayerState.pierced) 
+		{
+			p.defense -= pierceValue;
+			i -= p.defense;
+			if(i < 0){i=0;}
+			p.Health -= i;
+		}
+        else if (p.defense > 0)
         {
             // check for pierce
             i -= p.defense;
 			if(i < 0){i = 0;}
+			p.Health -= i;
         }
         else
         {
             p.Health -= i; // Subtracts health depending on card
 
-			/* Migrated to Controller Class
-            if (p.Health <= 0)
-            {
-                // Code here to handle death. 
-            }
-            */
         }
 		Log ("Player " + Name + " Takes " + i + " damage!");
+		defense = oldDef;
         p.Health -= i;
     }
+
     // Defend class. Happens when player throws up a defense card. 
     public void Defend(int i)
     {
@@ -122,9 +147,11 @@ public class Player {
 		var p = this;
 		p.defense = i; 
     }
+
     // Adds random event based on card usage. (LOTS OF HANDLERS)
     public void AddEffect(Card effectCard) // accept int enum
     {
+		var p = this;
         // What we want to do here is figure out a way to implement effects on the player based on effect cards played by the opposing factor.
         switch (effectCard.effect1)
         {
@@ -145,32 +172,98 @@ public class Player {
             // Actual code will come next playtest. For now, we'll just let the player know something is happening.
 		case EffectType.pierce:
 			Log("Player " + Name + " is now affected with pierce!");
+			p1State = PlayerState.pierced;
 			break;
 		case EffectType.block:
 			Log("Player " + Name + " is now affected by a card block!");
+
+			// I can't figure out how to do this one. 
+			p1State = PlayerState.blocked;
 			break;
 		case EffectType.heal: 
 			Log("Player " + Name + " is Healed!");
+			p1State = PlayerState.healed;
+			
+			p.Health += cardChoice.effectStrength1;
 			break;
 		case EffectType.counter:
 			Log("Player " + Name + " is now ready to counter!");
+
+			// handled in the controller 
+			p1State = PlayerState.countered;
 			break;
 		case EffectType.poison:
 			Log("Player " + Name + " is now affected with poison!");
+			/*
+			p1State = PlayerState.poisoned;
+			if(p1State == PlayerState.poisoned && contrl.state == GameState.standby && cardChoice.effect1 == EffectType.poison)
+			{
+				turns++;
+				p.Health -= cardChoice.effectStrength1;
+				if(turns >= 3)
+				{
+					p1State = PlayerState.safe;
+				}
+			}
+			if(p1State == PlayerState.poisoned && contrl.state == GameState.standby && cardChoice.effect2 == EffectType.poison)
+			{
+				turns++;
+				p.Health -= cardChoice.effectStrength2;
+				if(turns >= 3)
+				{
+					p1State = PlayerState.safe;
+				}
+			}
+			*/
 			break;
 		case EffectType.cure:
 			Log("Player " + Name + " is cured!");
+			p1State = PlayerState.safe;
 			break;
 		case EffectType.burn:
 			Log("Player " + Name + " is now affected with burn!");
+
+			/*
+			// right now I just have burn hurting the player's defense
+			p1State = PlayerState.burned;
+			if(p1State == PlayerState.burned && contrl.state == GameState.standby && cardChoice.effect1 == EffectType.burn)
+			{
+				turns++;
+				p.defense -= cardChoice.effectStrength1;
+				if(turns >= 3)
+				{
+					p1State = PlayerState.safe;
+				}
+			}
+			if(p1State == PlayerState.burned && contrl.state == GameState.standby && cardChoice.effect2 == EffectType.burn)
+			{
+				turns++;
+				p.defense -= cardChoice.effectStrength2;
+				if(turns >= 3)
+				{
+					p1State = PlayerState.safe;
+				}
+			}
+			*/
 			break;
 		case EffectType.boost:
 			Log("Player " + Name + "'s attack is boosted!");
+			// should be handled in controller. Not implemented atm
+			p1State = PlayerState.boosted;
 			break;
 		case EffectType.bind:
 			Log("Player " + Name + " is now affected with bind!");
+			/*
+			p1State = PlayerState.bound;
+			if(p1State == PlayerState.bound && contrl.state == GameState.BattleP1)
+			{
+				contrl.gameState = BoardState.BattleP2;
+			}
+			*/
 			break;
         }
+
+		// What we want to do here is figure out a way to implement effects on the player based on effect cards played by the opposing factor.
 		switch (effectCard.effect2)
 		{
 			// Just for note, We may want to seperate these effects into seperate methods later.
@@ -190,30 +283,90 @@ public class Player {
 			// Actual code will come next playtest. For now, we'll just let the player know something is happening.
 		case EffectType.pierce:
 			Log("Player " + Name + " is now affected with pierce!");
+			p1State = PlayerState.pierced;
 			break;
 		case EffectType.block:
 			Log("Player " + Name + " is now affected by a card block!");
+			
+			// I can't figure out how to do this one. 
+			p1State = PlayerState.blocked;
 			break;
 		case EffectType.heal: 
 			Log("Player " + Name + " is Healed!");
+			p1State = PlayerState.healed;
+			
+			p.Health += cardChoice.effectStrength1;
 			break;
 		case EffectType.counter:
 			Log("Player " + Name + " is now ready to counter!");
+			
+			// handled in the controller 
+			p1State = PlayerState.countered;
 			break;
 		case EffectType.poison:
 			Log("Player " + Name + " is now affected with poison!");
+			//p1State = PlayerState.poisoned;
+			//if(p1State == PlayerState.poisoned && contrl.gameState == BoardState.standby && cardChoice.effect1 == EffectType.poison)
+			//{
+			//	turns++;
+			//	p.Health -= cardChoice.effectStrength1;
+			//	if(turns >= 3)
+			//	{
+			//		p1State = PlayerState.safe;
+			//	}
+			//}
+			//if(p1State == PlayerState.poisoned && contrl.gameState == BoardState.standby && cardChoice.effect2 == EffectType.poison)
+			//{
+			//	turns++;
+			//	p.Health -= cardChoice.effectStrength2;
+			//	if(turns >= 3)
+			//	{
+			//		p1State = PlayerState.safe;
+			//	}
+			//}
 			break;
 		case EffectType.cure:
 			Log("Player " + Name + " is cured!");
+			p1State = PlayerState.safe;
 			break;
 		case EffectType.burn:
 			Log("Player " + Name + " is now affected with burn!");
+			
+			//// right now I just have burn hurting the player's defense
+			//p1State = PlayerState.burned;
+			//if(p1State == PlayerState.burned && contrl.gameState == BoardState.standby && cardChoice.effect1 == EffectType.burn)
+			//{
+			//	turns++;
+			//	p.defense -= cardChoice.effectStrength1;
+			//	if(turns >= 3)
+			//	{
+			//		p1State = PlayerState.safe;
+			//	}
+			//}
+			//if(p1State == PlayerState.burned && contrl.gameState == BoardState.standby && cardChoice.effect2 == EffectType.burn)
+			//{
+			//	turns++;
+			//	p.defense -= cardChoice.effectStrength2;
+			//	if(turns >= 3)
+			//	{
+			//		p1State = PlayerState.safe;
+			//	}
+			//}
 			break;
 		case EffectType.boost:
 			Log("Player " + Name + "'s attack is boosted!");
+			// should be handled in controller. Not implemented atm
+			p1State = PlayerState.boosted;
 			break;
 		case EffectType.bind:
 			Log("Player " + Name + " is now affected with bind!");
+			/*
+			p1State = PlayerState.bound;
+			if(p1State == PlayerState.bound && contrl.gameState == BoardState.BattleP1)
+			{
+				contrl.gameState = BoardState.BattleP2;
+			}
+			*/
 			break;
 		}
     }
@@ -221,7 +374,6 @@ public class Player {
 	{
 		// Player will choose a card from their hand.
 		// This will eventually be associated with a button press on the card. 
-		Card cardChoice = null;
 
 		switch (cardToPlay) {
 		case 1:
