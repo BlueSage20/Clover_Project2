@@ -19,6 +19,7 @@ public class Controller2 : MonoBehaviour {
 	private Player p1;
 	private Player p2;
 	private Card c1, c2;
+	private GameObject go1, go2;
 
 	private GameState state = GameState.Player1Deciding | GameState.Player2Deciding;
 
@@ -54,7 +55,8 @@ public class Controller2 : MonoBehaviour {
 
 		// get new height
 
-		float height = 0;
+		// ... WHY
+		float height = 26;
 
 		Debug.Log("ymax, ymin: " + logWindow.rect.yMax + " " + logWindow.rect.yMin);
 		Debug.Log("szdelta: " + logWindow.sizeDelta);
@@ -74,29 +76,39 @@ public class Controller2 : MonoBehaviour {
 	{
 		var uiCard = card.GetComponent<UICard>();
 		Debug.Log(uiCard.card.cardName + " was clicked");
-		BattleLog("potato");
 
 		var owner = uiCard.owner;
 
 		if ((state & GameState.Player1Deciding) == GameState.Player1Deciding)
-		if (owner == p1) {
-					c1 = uiCard.card;
-					state = state | GameState.Player1Chosen ^ GameState.Player1Deciding;
-		}
+			if (owner == p1)
+			{
+				c1 = uiCard.card;
+				go1 = card;
+				BattleLog("Player " + p1.Name + " picked " + uiCard.card.ToString());
+				state = state | GameState.Player1Chosen ^ GameState.Player1Deciding;
+			}
 
 		if ((state & GameState.Player2Deciding) == GameState.Player2Deciding)
-		if (owner == p2) {
-					c2 = uiCard.card;
-					state = state | GameState.Player2Chosen ^ GameState.Player2Deciding;
-		}
-				
+			if (owner == p2)
+			{
+				c2 = uiCard.card;
+				go2 = card;
+				BattleLog("Player " + p2.Name + " picked " + uiCard.card.ToString());
+				state = state | GameState.Player2Chosen ^ GameState.Player2Deciding;
+			}
+
 		if ((state & GameState.Player1Chosen) == GameState.Player1Chosen)
 			if ((state & GameState.Player2Chosen) == GameState.Player2Chosen)
 			{
 				CardChecks(p1, p2, c1, c2);
+				Destroy(go1);
+				Destroy(go2);
+				p1.discard(c1);
+				p2.discard(c2);
+				p1.draw();
+				p2.draw();
+				state = GameState.Player1Deciding | GameState.Player2Deciding;
 			}
-
-			
 	}
 
 	public void CardChecks(Player p1, Player p2, Card p1Card, Card p2Card)
@@ -157,5 +169,7 @@ public class Controller2 : MonoBehaviour {
 			}
 		}
 
+		BattleLog("Player " + p1.Name + " now has " + p1.Health + "HP");
+		BattleLog("Player " + p2.Name + " now has " + p2.Health + "HP");
 	}
 }

@@ -49,17 +49,46 @@ public class Player {
 		{
 			defense = BASE_DEFENSE;
 		}
-		
-		for(int i = 0; i < 3; i++)
-		{
-			var card = deck.Draw();
-			hand[i] = card;
-			card.setupUICard(cardPrototype, uiHand, this);
 
-			Log("Player " + nme + " draws " + hand[i].cardName);
+		for (int i = 0; i < 3; i++)
+		{
+			draw();
 		}
 		
+	}
 
+	public void discard(Card card)
+	{
+		for (int i = 0; i < hand.Length; i++) {
+			if (hand[i] == card) {
+				hand[i] = null;
+				break;
+			}
+		}
+	}
+
+	public void draw()
+	{
+		int idx = int.MaxValue;
+		bool found = false;
+
+		for (int i = 0; i < hand.Length; i++)
+		{
+			if (hand[i] == null)
+			{
+				idx = i;
+				found = true;
+				break;
+			}
+		}
+
+		if (!found) return;
+
+		var card = deck.Draw();
+		hand[idx] = card;
+		card.setupUICard(cardPrototype, uiHand, this);
+
+		Log("Player " + Name + " draws " + card.cardName);
 	}
 
     // meant to handle when the player is struck by enemy card. 

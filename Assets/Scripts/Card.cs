@@ -160,7 +160,8 @@ public class Card{
 
 	public override string ToString()
 	{
-		return cardName;
+		return string.Format("{0} ({1}) {2}/{3} {4} ({5}) {6} ({7}",
+		cardName, type, atk, def, effect1, effectStrength1, effect2, effectStrength2);
 	}
 
 	/*
