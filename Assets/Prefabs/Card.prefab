@@ -11,7 +11,7 @@ GameObject:
   - 222: {fileID: 22242206}
   - 114: {fileID: 11442202}
   - 114: {fileID: 11442204}
-  - 114: {fileID: 11442208}
+  - 114: {fileID: 11408062}
   m_Layer: 5
   m_Name: Card
   m_TagString: Untagged
@@ -36,6 +36,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &11408062
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 142206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64a5bb26f981f1642b424d5b8cdabe88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 0}
 --- !u!114 &11442202
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -136,17 +148,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Button
---- !u!114 &11442208
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 142206}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64a5bb26f981f1642b424d5b8cdabe88, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!222 &22242206
 CanvasRenderer:
   m_ObjectHideFlags: 1

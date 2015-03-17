@@ -5,5 +5,15 @@ public class UICard : MonoBehaviour {
 
 	public Card card;
 
-	public Controller controller;
+	public Player owner;
+
+	// Use this for initialization
+	void Start () {
+	
+	}
+	
+	// Update is called once per frame
+	void Update () {
+	
+	}
 }

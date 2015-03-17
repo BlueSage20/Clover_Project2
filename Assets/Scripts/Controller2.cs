@@ -1,138 +1,102 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 using System.Collections;
+using UnityEngine.EventSystems;
+using System;
 
-// To keep track of battle turns
-public enum BoardState 
+[Flags]
+public enum GameState
 {
-	standby,
-	BattleP1,
-	BattleP2
-}
-
-// check for card choice
-public enum CardChoice
-{
-	card1,
-	card2,
-	card3
+	None = 0x0,
+	Player1Deciding = 0x1,
+	Player2Deciding = 0x2,
+	Player1Chosen = 0x4,
+	Player2Chosen = 0x8
 }
 
 public class Controller2 : MonoBehaviour {
-	// the players are instantiated with a set number
-	public Player[] players = new Player[2];
-	// set enum on standby for now
-	public BoardState gameState = BoardState.standby;
+	private Player p1;
+	private Player p2;
+	private Card c1, c2;
 
-	// Cards are kept as defaults for the moment until player choice can be checked.
-	// Enum CardChoice = CardChoice.card1;
-	public CardChoice p1CardChoice = CardChoice.card1;
-	public CardChoice p2CardChoice = CardChoice.card1;
+	private GameState state = GameState.Player1Deciding | GameState.Player2Deciding;
+
+	public GameObject cardPrototype;
+	public GameObject textPrototype;
+	public RectTransform logWindow;
+
+	public Transform hand1, hand2;
 
 	// Use this for initialization
 	void Start () {
 		// initialize a name for the player. (Player class takes at least a name)
-		players [0] = new Player ("James");
-		players [1] = new Player ("Sung");
-		Debug.Log("Please press space to initiate battle");
+		p1 = new Player ("James", hand1, cardPrototype, BattleLog);
+		p2 = new Player ("Sung", hand2, cardPrototype, BattleLog);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		// Do a switch statement for gamestate or "Turns"
-		switch (gameState){
-		case BoardState.standby:
-			// if the player presses Space, the game will begin
-			if (Input.GetKeyDown (KeyCode.Space)) 
+	}
+
+	/// <summary>
+	/// Print a message to the battle log, resizing it as necessary.
+	/// </summary>
+	/// <param name="message"></param>
+	void BattleLog(string message)
+	{
+		Debug.Log("BattleLog: " + message);
+		var txt = Instantiate(textPrototype) as GameObject;
+
+		txt.GetComponent<Text>().text = message;
+
+		txt.transform.SetParent(logWindow, false);
+
+		// get new height
+
+		float height = 0;
+
+		Debug.Log("ymax, ymin: " + logWindow.rect.yMax + " " + logWindow.rect.yMin);
+		Debug.Log("szdelta: " + logWindow.sizeDelta);
+
+		foreach (RectTransform trans in logWindow) {
+			height += trans.rect.height;
+		}
+
+		logWindow.GetComponent<VerticalLayoutGroup>().enabled = false;
+		logWindow.GetComponent<VerticalLayoutGroup>().enabled = true;
+
+		logWindow.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Bottom, 0, height);
+		Debug.Log("total element height: " + height);
+	}
+
+	public void CardClicked(GameObject card)
+	{
+		var uiCard = card.GetComponent<UICard>();
+		Debug.Log(uiCard.card.cardName + " was clicked");
+		BattleLog("potato");
+
+		var owner = uiCard.owner;
+
+		if ((state & GameState.Player1Deciding) == GameState.Player1Deciding)
+		if (owner == p1) {
+					c1 = uiCard.card;
+					state = state | GameState.Player1Chosen ^ GameState.Player1Deciding;
+		}
+
+		if ((state & GameState.Player2Deciding) == GameState.Player2Deciding)
+		if (owner == p2) {
+					c2 = uiCard.card;
+					state = state | GameState.Player2Chosen ^ GameState.Player2Deciding;
+		}
+				
+		if ((state & GameState.Player1Chosen) == GameState.Player1Chosen)
+			if ((state & GameState.Player2Chosen) == GameState.Player2Chosen)
 			{
-				Battle(players[0],players[1]);
+				CardChecks(p1, p2, c1, c2);
 			}
-			break;
-		case BoardState.BattleP1:
-			// get player key input, between ASD, and set the cards from hand. (Will later be changed with User Interface cards)
-			if (Input.GetKeyDown (KeyCode.A)) {
-				p1CardChoice = CardChoice.card1;
-				Debug.Log ("Battle Mode Part 2!");
-				gameState = BoardState.BattleP2;
-			} 
-			else if (Input.GetKeyDown (KeyCode.S)) {
-				p1CardChoice = CardChoice.card2;
-				Debug.Log ("Battle Mode Part 2!");
-				gameState = BoardState.BattleP2;
-			} 
-			else if (Input.GetKeyDown (KeyCode.D)) {
-				p1CardChoice = CardChoice.card3;
-				Debug.Log ("Battle Mode Part 2!");
-				gameState = BoardState.BattleP2;
-			}
-			break;
-		case BoardState.BattleP2:
-			// Same as above, now for player 2
-			if (Input.GetKeyDown (KeyCode.J)) {
-				p2CardChoice = CardChoice.card1;
-				BattleResolve (players[0], players[1]);
-			} 
-			else if (Input.GetKeyDown (KeyCode.K)) {
-				p2CardChoice = CardChoice.card2;
-				BattleResolve (players[0], players[1]);
-			} 
-			else if (Input.GetKeyDown (KeyCode.L)) {
-				p2CardChoice = CardChoice.card3;
-				BattleResolve (players[0], players[1]);
-			}
-			break;
-		}
-	}
-	
-	// Begin Battle Phase
-	public void Battle(Player p1, Player p2)
-	{
-		Debug.Log ("Battle Mode!");
-		gameState = BoardState.BattleP1;
-	}
 
-	public void BattleResolve(Player p1, Player p2)
-	{
-		// call cards
-		Card p1Card = null;
-		Card p2Card = null;
-
-		switch (p1CardChoice) {
-		case CardChoice.card1:
-			p1Card = p1.playCard (1);
-			break;
-		case CardChoice.card2:
-			p1Card = p1.playCard (2);
-			break;
-		case CardChoice.card3:
-			p1Card = p1.playCard (3);
-			break;
-		}
-
-		switch (p2CardChoice) {
-		case CardChoice.card1:
-			p2Card = p2.playCard (1);
-			break;
-		case CardChoice.card2:
-			p2Card = p2.playCard (2);
-			break;
-		case CardChoice.card3:
-			p2Card = p2.playCard (3);
-			break;
-		}
-
-		CardChecks (p1, p2, p1Card, p2Card);
-
-		// check for player death
-		if (p1.Health <= 0) {
-			Debug.Log("Player " + p1.Name + " has fallen!");
-		}
-		if (p2.Health <= 0) {
-			Debug.Log("Player " + p2.Name + " has fallen!");
-		}
-	
-		Debug.Log ("Standby Mode!");
-
-		gameState = BoardState.standby;
+			
 	}
 
 	public void CardChecks(Player p1, Player p2, Card p1Card, Card p2Card)
@@ -194,5 +158,4 @@ public class Controller2 : MonoBehaviour {
 		}
 
 	}
-
 }

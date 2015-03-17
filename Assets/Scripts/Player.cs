@@ -23,11 +23,21 @@ public class Player {
 
 	public Deck deck;
 	public Card[] hand = new Card[3];
+	public Transform uiHand;
+
+	public delegate void logger(string msg);
+
+	logger Log;
+
+	public GameObject cardPrototype;
 
 	// Use this for initialization
-	public Player (string nme) {
+	public Player (string nme, Transform uiHand, GameObject cardPrototype, logger log) {
 		deck = new Deck ();
 		Name = nme;
+		this.uiHand = uiHand;
+		this.cardPrototype = cardPrototype;
+		this.Log = log;
 		
 		// if player has no health initially, start player with max health.
 		if(Health <= 0)
@@ -42,8 +52,11 @@ public class Player {
 		
 		for(int i = 0; i < 3; i++)
 		{
-			hand[i] = deck.Draw();
-			Debug.Log("Player " + nme + " draws " + hand[i].cardName);
+			var card = deck.Draw();
+			hand[i] = card;
+			card.setupUICard(cardPrototype, uiHand, this);
+
+			Log("Player " + nme + " draws " + hand[i].cardName);
 		}
 		
 
@@ -70,13 +83,13 @@ public class Player {
             }
             */
         }
-		Debug.Log ("Player " + Name + " Takes " + i + " damage!");
+		Log ("Player " + Name + " Takes " + i + " damage!");
         p.Health -= i;
     }
     // Defend class. Happens when player throws up a defense card. 
     public void Defend(int i)
     {
-		Debug.Log ("Player " + Name + " Gains " + i + " defense!");
+		Log ("Player " + Name + " Gains " + i + " defense!");
 		var p = this;
 		p.defense = i; 
     }
@@ -102,31 +115,31 @@ public class Player {
              * */
             // Actual code will come next playtest. For now, we'll just let the player know something is happening.
 		case EffectType.pierce:
-			Debug.Log("Player " + Name + " is now affected with pierce!");
+			Log("Player " + Name + " is now affected with pierce!");
 			break;
 		case EffectType.block:
-			Debug.Log("Player " + Name + " is now affected by a card block!");
+			Log("Player " + Name + " is now affected by a card block!");
 			break;
 		case EffectType.heal: 
-			Debug.Log("Player " + Name + " is Healed!");
+			Log("Player " + Name + " is Healed!");
 			break;
 		case EffectType.counter:
-			Debug.Log("Player " + Name + " is now ready to counter!");
+			Log("Player " + Name + " is now ready to counter!");
 			break;
 		case EffectType.poison:
-			Debug.Log("Player " + Name + " is now affected with poison!");
+			Log("Player " + Name + " is now affected with poison!");
 			break;
 		case EffectType.cure:
-			Debug.Log("Player " + Name + " is cured!");
+			Log("Player " + Name + " is cured!");
 			break;
 		case EffectType.burn:
-			Debug.Log("Player " + Name + " is now affected with burn!");
+			Log("Player " + Name + " is now affected with burn!");
 			break;
 		case EffectType.boost:
-			Debug.Log("Player " + Name + "'s attack is boosted!");
+			Log("Player " + Name + "'s attack is boosted!");
 			break;
 		case EffectType.bind:
-			Debug.Log("Player " + Name + " is now affected with bind!");
+			Log("Player " + Name + " is now affected with bind!");
 			break;
         }
 		switch (effectCard.effect2)
@@ -147,31 +160,31 @@ public class Player {
              * */
 			// Actual code will come next playtest. For now, we'll just let the player know something is happening.
 		case EffectType.pierce:
-			Debug.Log("Player " + Name + " is now affected with pierce!");
+			Log("Player " + Name + " is now affected with pierce!");
 			break;
 		case EffectType.block:
-			Debug.Log("Player " + Name + " is now affected by a card block!");
+			Log("Player " + Name + " is now affected by a card block!");
 			break;
 		case EffectType.heal: 
-			Debug.Log("Player " + Name + " is Healed!");
+			Log("Player " + Name + " is Healed!");
 			break;
 		case EffectType.counter:
-			Debug.Log("Player " + Name + " is now ready to counter!");
+			Log("Player " + Name + " is now ready to counter!");
 			break;
 		case EffectType.poison:
-			Debug.Log("Player " + Name + " is now affected with poison!");
+			Log("Player " + Name + " is now affected with poison!");
 			break;
 		case EffectType.cure:
-			Debug.Log("Player " + Name + " is cured!");
+			Log("Player " + Name + " is cured!");
 			break;
 		case EffectType.burn:
-			Debug.Log("Player " + Name + " is now affected with burn!");
+			Log("Player " + Name + " is now affected with burn!");
 			break;
 		case EffectType.boost:
-			Debug.Log("Player " + Name + "'s attack is boosted!");
+			Log("Player " + Name + "'s attack is boosted!");
 			break;
 		case EffectType.bind:
-			Debug.Log("Player " + Name + " is now affected with bind!");
+			Log("Player " + Name + " is now affected with bind!");
 			break;
 		}
     }

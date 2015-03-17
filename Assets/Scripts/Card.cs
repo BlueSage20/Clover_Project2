@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public enum CardType 
@@ -31,6 +32,7 @@ public class Card{
 	public int effectStrength1;
 	public EffectType effect2;
 	public int effectStrength2;
+	public Player owner;
 
 	// Use this for initialization
 	void Start () {
@@ -130,6 +132,35 @@ public class Card{
 		if (value2 != null) {
 			effectStrength2 = int.Parse (value2);
 		}
+	}
+
+	/// <summary>
+	/// Create the UI representation of the card, place it in the proper area,
+	/// and link up event handlers, information, etc.
+	/// </summary>
+	/// <param name="cardPrototype"></param>
+	/// <param name="uiHand"></param>
+	public void setupUICard(GameObject cardPrototype, Transform uiHand, Player owner)
+	{
+		this.owner = owner;
+
+		var card = GameObject.Instantiate(cardPrototype) as GameObject;
+		card.name = this.ToString();
+
+		var text = card.GetComponentInChildren<Text>();
+		text.text = this.ToString();
+
+		var uiCard = card.GetComponent<UICard>();
+		uiCard.card = this;
+		uiCard.owner = owner;
+
+		//GameObject.Find("GameManager").GetComponent<Controller2>().CardClicked
+		card.transform.SetParent(uiHand, false);
+	}
+
+	public override string ToString()
+	{
+		return cardName;
 	}
 
 	/*
