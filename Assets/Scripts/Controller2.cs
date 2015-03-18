@@ -53,24 +53,6 @@ public class Controller2 : MonoBehaviour {
 		txt.GetComponent<Text>().text = message;
 
 		txt.transform.SetParent(logWindow, false);
-
-		// get new height
-
-		// ... WHY
-		float height = 26;
-
-		Debug.Log("ymax, ymin: " + logWindow.rect.yMax + " " + logWindow.rect.yMin);
-		Debug.Log("szdelta: " + logWindow.sizeDelta);
-
-		foreach (RectTransform trans in logWindow) {
-			height += trans.rect.height;
-		}
-
-		logWindow.GetComponent<VerticalLayoutGroup>().enabled = false;
-		logWindow.GetComponent<VerticalLayoutGroup>().enabled = true;
-
-		logWindow.SetInsetAndSizeFromParentEdge(RectTransform.Edge.Bottom, 0, height);
-		Debug.Log("total element height: " + height);
 	}
 
 	public void CardClicked(GameObject card)
